@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ch">
+  <head>
+    
+
+    
+<script>!function(){document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>关于开发Soer的时候衍生的一些想法</title>
+<meta name="keywords" content="关于开发Soer的时候衍生的一些想法, root@debian:~#">
+<meta name="description" content="这篇文章的面向人群是之前没有做过USB的人或者是只会用工具解USB的人的，我将会基于一个完整的USB流量包来分析整个USB的流量传输的过程，以及我会写一下我开发Soer的一些经验什么的。(因为不太熟悉md和写文章，内容有不对的地方还请指正，">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="关于开发Soer的时候衍生的一些想法">
+<meta property="og:description" content="这篇文章的面向人群是之前没有做过USB的人或者是只会用工具解USB的人的，我将会基于一个完整的USB流量包来分析整个USB的流量传输的过程，以及我会写一下我开发Soer的一些经验什么的。(因为不太熟悉md和写文章，内容有不对的地方还请指正，">
+
+<link rel="shortcut icon" href="/project/images/favicon.ico">
+<link rel="stylesheet" href="/project/style/main.css">
+
+  <link rel="stylesheet" href="/project/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 7.3.0"></head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://y1shiny1shin.github.io/project">
+        <img class="avatar" src="https://q.qlogo.cn/g?b=qq&amp;nk=2729913542&amp;s=100" alt="logo" width="32px" height="32px">
+      </a>
+      <a href="https://y1shiny1shin.github.io/project">
+        <h1 class="site-title">root@debian:~#</h1>
+      </a>
+    </div>
+    <div class="right">
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/project/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/project/tags" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/project/archives" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/project/about" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">关于开发Soer的时候衍生的一些想法</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2023-11-10</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/project/tags/Misc/">
+              Misc
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <p>这篇文章的面向人群是<strong>之前没有做过USB的人或者是只会用工具解USB的人的</strong>，我将会基于一个完整的USB流量包来分析整个USB的流量传输的过程，<del>以及我会写一下我开发Soer的一些经验什么的</del>。(因为不太熟悉md和写文章，内容有不对的地方还请指正，谢谢各位师傅，可以添加笔者的QQ <code>2729913542</code>)</p>
+<p>这是我随便抓的一个我自己的设备的流量包，本文都将基于这个流量包进行分析:<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1W7JEpf9SBL7jrBV6_fiyZQ?pwd=love">下载地址</a></p>
+<p>进行USB流量分析的第一步就是要正确安装<strong>带有USBpcap的wireshark</strong>，否则wireshark将不能正确的显示USB的流量包</p>
+<h6 id="一个简单的例子"><a href="#一个简单的例子" class="headerlink" title="一个简单的例子"></a><strong>一个简单的例子</strong></h6><p>这个是未有正确安装USBpcap的wireshark解析出来的USB流量<br><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357697-1028438533.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357697-1028438533.png"  alt="20231102203534" lazyload></a><br>这个是正确安装USBpcap的wireshark解析出来的USB流量<br><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357726-779440520.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357726-779440520.png"  alt="20231102203656" lazyload></a></p>
+<p>区别还是很明显的，这篇文章就不讲怎么安装软件了</p>
+<h2 id="USB流量的结构"><a href="#USB流量的结构" class="headerlink" title="USB流量的结构"></a><strong>USB流量的结构</strong></h2><p>打开流量包，可以看到有host和非host的IP</p>
+<p>只要是一个<strong>正常完整</strong>的USB流量包，就可以看到有这部分的数据</p>
+<p><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357710-1222647471.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357710-1222647471.png"  alt="20231102212937" lazyload></a></p>
+<p>这一部分是主机用来确认USB设备的基本信息的包</p>
+<h5 id="源IP为host"><a href="#源IP为host" class="headerlink" title="源IP为host"></a><strong>源IP为host</strong></h5><p>就是从本机发回USB设备的数据，从主机发回去的数据包类似于tcp三次握手的第二次握手，主机向设备发送报文，告诉设备:我收到了了你的数据</p>
+<p>这类的包只是对USB设备发送，并不会存储我们需要的数据，可以忽略</p>
+<h5 id="源IP为非host的数据包"><a href="#源IP为非host的数据包" class="headerlink" title="源IP为非host的数据包"></a><strong>源IP为非host的数据包</strong></h5><p>这种数据包可以分为两类，<em>IP最后一位为0</em> ，<em>IP最后一位不为0</em> 的两种。</p>
+<blockquote>
+<p><strong>ip最后一位不为0</strong><br>这种包就是用来传输具体的数据的，比如</p>
+<p><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357713-1429513026.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357713-1429513026.png"  alt="20231102213017" lazyload></a></p>
+<p><em>Leftover Capture Data</em> 这个字段(相当于是payload)，储存的就是由地址 <code>1.6.2</code> 发给电脑的数据，前面的 <em>USB URB</em> 以及 <em>Frame</em> 都是报文，并不存储信息</p>
+<p>这种包的发送方都是设备方，</p>
+<p><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357712-1745689939.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357712-1745689939.png"  alt="20231102213046" lazyload></a></p>
+<p>可以很明显的看出来，第一个有数据的包是从设备方发给主机的。</p>
+<p>通常情况下，这个字段的数据就是我们需要的，当然也不排除<del>出题人恶心人</del>😋</p>
+<p><strong>IP最后一位为0</strong></p>
+<p>这种包就是电脑用来确认USB设备的信息的，这种包的发送方一定是主机方，回复方一定是设备方，</p>
+<p><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357715-392717454.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357715-392717454.png"  alt="20231102213127" lazyload></a></p>
+<p>能很清晰的看到，在这种包的 <em>Info</em> 部分，主机在这个时候都是做的request操作，也可以证实前文码的那部分</p>
+<p>这种包的回包里面会传输设备的基本信息和将要传输的数据特征和格式什么的，从这种包就可以读出一些信息，比如我现在查看其中一个回包的 <em>DEVICE DESCRIPTOR</em> 部分，</p>
+<p><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357690-1780120531.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357690-1780120531.png"  alt="20231102213612" lazyload></a></p>
+<p>第一类包的 <em>INFO</em> 为 <em>DESCRIPTOR Response DEVICE</em> 在这里可以看到它的公司和设备名的id，可以通过在此网站查询该设备 <a target="_blank" rel="noopener" href="http://www.linux-usb.org/usb.ids">USB ID List</a> ，<del>可能会需要kexue shangwang</del> </p>
+<p>这个也是Soer实现的一个基本原理</p>
+<p>第二类包的 <em>INFO</em> 为 <em>DESCRIPTOR Response CONFIGURATION</em> 这里可以看到USB设备的基本信息什么的，不太重要</p>
+<p>第三类包就是用来告诉设备可以开始传输数据了</p>
+<p>一次正常的传输，就应该包括设备的确认和数据的传输，设备的确认，主机和设备有三次交互<br><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357713-2084298786.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357713-2084298786.png"  alt="20231102215626" lazyload></a></p>
+<p>然后就会开始传输数据了<br/></p>
+</blockquote>
+<blockquote>
+<p><strong>简单总结一下上面写的，就是在USB流量中，只有源IP的尾部不为0的数据包才会有传输的，其他的数据对于解题来说，<del>帮助不大的</del></strong></p>
+</blockquote>
+<p>简单了解了一下USB流量的结构，然后就可以开始分析数据了；<br>比赛中可能会遇到USB数据大概可以分成三类：键盘、鼠标、触摸板</p>
+<h4 id="键盘流量"><a href="#键盘流量" class="headerlink" title="键盘流量"></a>键盘流量</h4><p>这种流量遇见的可能会比较多，在这个流量包中，键盘的IP为 <code>1.2.1</code> 输入这个规则可以过滤<code>usb.src == &quot;1.2.1&quot;</code><br><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357713-1435942442.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357713-1435942442.png"  alt="20231102222356" lazyload></a></p>
+<blockquote>
+<p>然后来看一下它传输的数据。这个时候，我们一个个地点是不是很麻烦，而且不直观？<br>这个时候就要用上 <code>tshark</code> 这个命令行工具，linux下可以用（windows也有，但是我喜欢用linux版的<br>用这个命令 <code>tshark -r USB_Example.pcapng -T fields -Y &#39;usb.src==1.2.1&#39; -e usbhid.data</code><br><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357826-21248127.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357826-21248127.png"  alt="20231102223008" lazyload></a><br>还是可以比较清晰地看到哪个位置是有数据的</p>
+</blockquote>
+<p>那么这时候我们可以把两个位置的数据给提取出来，然后分别分析<br>用<code>tshark -r USB_Example.pcapng -T fields -Y &#39;usb.src==1.2.1&#39; -e usbhid.data &gt; usbhid.data</code><br>用如下代码提取</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">file_data = open(&quot;usbhid.data&quot;).readlines()</span><br><span class="line">for i in file_data:</span><br><span class="line">    print(i[4:6] ,end=&quot; &quot;)</span><br></pre></td></tr></table></figure>
+<p><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357630-1615466929.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357630-1615466929.png"  alt="20231108202549" lazyload></a><br>结果大概是这样，然后再去USB keyboard的官方文档去看看<a target="_blank" rel="noopener" href="https://www.usb.org/sites/default/files/hut1_22.pdf">USB_hidusage_pdf</a> 大概在82页<br>然后前面的<strong>Usage ID</strong>代表的就是流量包抓取的值，这个时候，只需要做个替换就行了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">keyboard_dir = &#123;</span><br><span class="line">        &quot;04&quot;:&quot;a&quot;, &quot;05&quot;:&quot;b&quot;, &quot;06&quot;:&quot;c&quot;, &quot;07&quot;:&quot;d&quot;, &quot;08&quot;:&quot;e&quot;,&quot;09&quot;:&quot;f&quot;, &quot;0a&quot;:&quot;g&quot;, &quot;0b&quot;:&quot;h&quot;, &quot;0c&quot;:&quot;i&quot;, &quot;0d&quot;:&quot;j&quot;,&quot;0e&quot;:&quot;k&quot;, &quot;0f&quot;:&quot;l&quot;, &quot;10&quot;:&quot;m&quot;, &quot;11&quot;:&quot;n&quot;, &quot;12&quot;:&quot;o&quot;,&quot;13&quot;:&quot;p&quot;, &quot;14&quot;:&quot;q&quot;, &quot;15&quot;:&quot;r&quot;, &quot;16&quot;:&quot;s&quot;, &quot;17&quot;:&quot;t&quot;,&quot;18&quot;:&quot;u&quot;, &quot;19&quot;:&quot;v&quot;, &quot;1a&quot;:&quot;w&quot;, &quot;1b&quot;:&quot;x&quot;, &quot;1c&quot;:&quot;y&quot;,&quot;1d&quot;:&quot;z&quot;,&quot;1e&quot;:&quot;1&quot;, &quot;1f&quot;:&quot;2&quot;, &quot;20&quot;:&quot;3&quot;, &quot;21&quot;:&quot;4&quot;,&quot;22&quot;:&quot;5&quot;, &quot;23&quot;:&quot;6&quot;,&quot;24&quot;:&quot;7&quot;,&quot;25&quot;:&quot;8&quot;,&quot;26&quot;:&quot;9&quot;,&quot;27&quot;:&quot;0&quot;,&quot;28&quot;:&quot;\n&quot;,&quot;29&quot;:&quot;&lt;ESC&gt;&quot;,&quot;2a&quot;:&quot;&lt;DEL&gt;&quot;, &quot;2b&quot;:&quot;\t&quot;,&quot;2c&quot;:&quot; &quot;,&quot;2d&quot;:&quot;-&quot;,&quot;2e&quot;:&quot;=&quot;,&quot;2f&quot;:&quot;[&quot;,&quot;30&quot;:&quot;]&quot;,&quot;31&quot;:&quot;\\&quot;,&quot;32&quot;:&quot;&lt;NON&gt;&quot;,&quot;33&quot;:&quot;;&quot;,&quot;34&quot;:&quot;&#x27;&quot;,&quot;35&quot;:&quot;&lt;GA&gt;&quot;,&quot;36&quot;:&quot;,&quot;,&quot;37&quot;:&quot;.&quot;,&quot;38&quot;:&quot;/&quot;,&quot;39&quot;:&quot;&lt;CAP&gt;&quot;,&quot;3a&quot;:&quot;&lt;F1&gt;&quot;,&quot;3b&quot;:&quot;&lt;F2&gt;&quot;, &quot;3c&quot;:&quot;&lt;F3&gt;&quot;,&quot;3d&quot;:&quot;&lt;F4&gt;&quot;,&quot;3e&quot;:&quot;&lt;F5&gt;&quot;,&quot;3f&quot;:&quot;&lt;F6&gt;&quot;,&quot;40&quot;:&quot;&lt;F7&gt;&quot;,&quot;41&quot;:&quot;&lt;F8&gt;&quot;,&quot;42&quot;:&quot;&lt;F9&gt;&quot;,&quot;43&quot;:&quot;&lt;F10&gt;&quot;,&quot;44&quot;:&quot;&lt;F11&gt;&quot;,&quot;45&quot;:&quot;&lt;F12&gt;&quot;,&quot;46&quot;:&quot;&lt;PRTSC&gt;&quot;,&quot;47&quot;:&quot;&lt;SCR&gt;&quot;,&quot;48&quot;:&quot;&lt;PAUSE&gt;&quot;,&quot;49&quot;:&quot;&lt;INSERT&gt;&quot;,&quot;4a&quot;:&quot;&lt;HOME&gt;&quot;,&quot;4b&quot;:&quot;&lt;PGUP&gt;&quot;,&quot;4c&quot;:&quot;&lt;DEL FORWARD&gt;&quot;,&quot;4d&quot;:&quot;&lt;END&gt;&quot;,&quot;4e&quot;:&quot;&lt;PGDW&gt;&quot;,&quot;4f&quot;:&quot;&lt;RIGHTARROW&gt;&quot;,&quot;50&quot;:&quot;&lt;LEFTARROW&gt;&quot;,&quot;51&quot;:&quot;&lt;DOWNARROW&gt;&quot;,&quot;52&quot;:&quot;&lt;UPARRWO&gt;&quot;,&quot;00&quot;:&quot;&quot;,&quot;&quot;:&quot;&quot;&#125;</span><br><span class="line">file_data = open(&quot;usbhid.data&quot;).readlines()</span><br><span class="line">for i in file_data:</span><br><span class="line">    print(keyboard_dir(i[4:6]) ,end=&quot; &quot;)</span><br></pre></td></tr></table></figure>
+<p><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357648-422226748.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357648-422226748.png"  alt="20231108203936" lazyload></a><br>第一个问题，这个为什么会有这么多重复的？因为如果你按一个键按久了，那么主机接收完一次数据，还会继续接收同一个键的数据，就会有重复的，这个没办法避免，只有还原出结果了再手动处理</p>
+<p>第二个问题，<br><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357727-126122202.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357727-126122202.png"  alt="20231108204211" lazyload></a><br>这个第二列的数据是什么？是因为，如果按键太快了，主机在一个周期接收了两个数据，那么就会将接收到的第二个数据移到第二个byte去。但是在下个周期，这个数据又会重新发送给主机</p>
+<p>然后还有个Shift的情况，因为我本人的编程习惯，我觉得<code>upper() lower()</code>这两个函数很爽，我会偏向于用这两个，这个有一篇文章写得很好了，我就少写点了<br>这里就只是贴一下我的还原键盘的函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">def Value_2_PlainText(data_list):</span><br><span class="line">    normal_Keys = &#123;</span><br><span class="line">    &quot;04&quot;:&quot;a&quot;, &quot;05&quot;:&quot;b&quot;, &quot;06&quot;:&quot;c&quot;, &quot;07&quot;:&quot;d&quot;, &quot;08&quot;:&quot;e&quot;,&quot;09&quot;:&quot;f&quot;, &quot;0a&quot;:&quot;g&quot;, &quot;0b&quot;:&quot;h&quot;, &quot;0c&quot;:&quot;i&quot;, &quot;0d&quot;:&quot;j&quot;,&quot;0e&quot;:&quot;k&quot;, &quot;0f&quot;:&quot;l&quot;, &quot;10&quot;:&quot;m&quot;, &quot;11&quot;:&quot;n&quot;, &quot;12&quot;:&quot;o&quot;,&quot;13&quot;:&quot;p&quot;, &quot;14&quot;:&quot;q&quot;, &quot;15&quot;:&quot;r&quot;, &quot;16&quot;:&quot;s&quot;, &quot;17&quot;:&quot;t&quot;,&quot;18&quot;:&quot;u&quot;, &quot;19&quot;:&quot;v&quot;, &quot;1a&quot;:&quot;w&quot;, &quot;1b&quot;:&quot;x&quot;, &quot;1c&quot;:&quot;y&quot;,&quot;1d&quot;:&quot;z&quot;,&quot;1e&quot;:&quot;1&quot;, &quot;1f&quot;:&quot;2&quot;, &quot;20&quot;:&quot;3&quot;, &quot;21&quot;:&quot;4&quot;,&quot;22&quot;:&quot;5&quot;, &quot;23&quot;:&quot;6&quot;,&quot;24&quot;:&quot;7&quot;,&quot;25&quot;:&quot;8&quot;,&quot;26&quot;:&quot;9&quot;,&quot;27&quot;:&quot;0&quot;,&quot;28&quot;:&quot;\n&quot;,&quot;29&quot;:&quot;&lt;ESC&gt;&quot;,&quot;2a&quot;:&quot;&lt;DEL&gt;&quot;, &quot;2b&quot;:&quot;\t&quot;,&quot;2c&quot;:&quot; &quot;,&quot;2d&quot;:&quot;-&quot;,&quot;2e&quot;:&quot;=&quot;,&quot;2f&quot;:&quot;[&quot;,&quot;30&quot;:&quot;]&quot;,&quot;31&quot;:&quot;\\&quot;,&quot;32&quot;:&quot;&lt;NON&gt;&quot;,&quot;33&quot;:&quot;;&quot;,&quot;34&quot;:&quot;&#x27;&quot;,&quot;35&quot;:&quot;&lt;GA&gt;&quot;,&quot;36&quot;:&quot;,&quot;,&quot;37&quot;:&quot;.&quot;,&quot;38&quot;:&quot;/&quot;,&quot;39&quot;:&quot;&lt;CAP&gt;&quot;,&quot;3a&quot;:&quot;&lt;F1&gt;&quot;,&quot;3b&quot;:&quot;&lt;F2&gt;&quot;, &quot;3c&quot;:&quot;&lt;F3&gt;&quot;,&quot;3d&quot;:&quot;&lt;F4&gt;&quot;,&quot;3e&quot;:&quot;&lt;F5&gt;&quot;,&quot;3f&quot;:&quot;&lt;F6&gt;&quot;,&quot;40&quot;:&quot;&lt;F7&gt;&quot;,&quot;41&quot;:&quot;&lt;F8&gt;&quot;,&quot;42&quot;:&quot;&lt;F9&gt;&quot;,&quot;43&quot;:&quot;&lt;F10&gt;&quot;,&quot;44&quot;:&quot;&lt;F11&gt;&quot;,&quot;45&quot;:&quot;&lt;F12&gt;&quot;,&quot;46&quot;:&quot;&lt;PRTSC&gt;&quot;,&quot;47&quot;:&quot;&lt;SCR&gt;&quot;,&quot;48&quot;:&quot;&lt;PAUSE&gt;&quot;,&quot;49&quot;:&quot;&lt;INSERT&gt;&quot;,&quot;4a&quot;:&quot;&lt;HOME&gt;&quot;,&quot;4b&quot;:&quot;&lt;PGUP&gt;&quot;,&quot;4c&quot;:&quot;&lt;DEL FORWARD&gt;&quot;,&quot;4d&quot;:&quot;&lt;END&gt;&quot;,&quot;4e&quot;:&quot;&lt;PGDW&gt;&quot;,&quot;4f&quot;:&quot;&lt;RIGHTARROW&gt;&quot;,&quot;50&quot;:&quot;&lt;LEFTARROW&gt;&quot;,&quot;51&quot;:&quot;&lt;DOWNARROW&gt;&quot;,&quot;52&quot;:&quot;&lt;UPARRWO&gt;&quot;,&quot;00&quot;:&quot;&quot;,&quot;&quot;:&quot;&quot;&#125;</span><br><span class="line">    shift_Keys = &#123;</span><br><span class="line">    &quot;04&quot;:&quot;A&quot;, &quot;05&quot;:&quot;B&quot;, &quot;06&quot;:&quot;C&quot;, &quot;07&quot;:&quot;D&quot;, &quot;08&quot;:&quot;E&quot;, &quot;09&quot;:&quot;F&quot;, &quot;0a&quot;:&quot;G&quot;, &quot;0b&quot;:&quot;H&quot;, &quot;0c&quot;:&quot;I&quot;, &quot;0d&quot;:&quot;J&quot;, &quot;0e&quot;:&quot;K&quot;, &quot;0f&quot;:&quot;L&quot;, &quot;10&quot;:&quot;M&quot;, &quot;11&quot;:&quot;N&quot;, &quot;12&quot;:&quot;O&quot;, &quot;13&quot;:&quot;P&quot;, &quot;14&quot;:&quot;Q&quot;, &quot;15&quot;:&quot;R&quot;, &quot;16&quot;:&quot;S&quot;, &quot;17&quot;:&quot;T&quot;,&quot;18&quot;:&quot;U&quot;, &quot;19&quot;:&quot;V&quot;, &quot;1a&quot;:&quot;W&quot;, &quot;1b&quot;:&quot;X&quot;, &quot;1c&quot;:&quot;Y&quot;,&quot;1d&quot;:&quot;Z&quot;,&quot;1e&quot;:&quot;!&quot;, &quot;1f&quot;:&quot;@&quot;, &quot;20&quot;:&quot;#&quot;, &quot;21&quot;:&quot;$&quot;,&quot;22&quot;:&quot;%&quot;, &quot;23&quot;:&quot;^&quot;,&quot;24&quot;:&quot;&amp;&quot;,&quot;25&quot;:&quot;*&quot;,&quot;26&quot;:&quot;(&quot;,&quot;27&quot;:&quot;)&quot;,&quot;28&quot;:&quot;\n&quot;,&quot;29&quot;:&quot;&lt;ESC&gt;&quot;,&quot;2a&quot;:&quot;&lt;DEL&gt;&quot;,&quot;2b&quot;:&quot;\t&quot;,&quot;2c&quot;:&quot; &quot;,&quot;2d&quot;:&quot;_&quot;,&quot;2e&quot;:&quot;+&quot;,&quot;2f&quot;:&quot;&#123;&quot;,&quot;30&quot;:&quot;&#125;&quot;,&quot;31&quot;:&quot;|&quot;,&quot;32&quot;:&quot;&lt;NON&gt;&quot;,&quot;33&quot;:&quot;\&quot;&quot;,&quot;34&quot;:&quot;:&quot;,&quot;35&quot;:&quot;&lt;GA&gt;&quot;,&quot;36&quot;:&quot;&lt;&quot;,&quot;37&quot;:&quot;&gt;&quot;,&quot;38&quot;:&quot;?&quot;,&quot;39&quot;:&quot;&lt;CAP&gt;&quot;,&quot;3a&quot;:&quot;&lt;F1&gt;&quot;,&quot;3b&quot;:&quot;&lt;F2&gt;&quot;,&quot;3c&quot;:&quot;&lt;F3&gt;&quot;,&quot;3d&quot;:&quot;&lt;F4&gt;&quot;,&quot;3e&quot;:&quot;&lt;F5&gt;&quot;,&quot;3f&quot;:&quot;&lt;F6&gt;&quot;,&quot;40&quot;:&quot;&lt;F7&gt;&quot;,&quot;41&quot;:&quot;&lt;F8&gt;&quot;,&quot;42&quot;:&quot;&lt;F9&gt;&quot;,&quot;43&quot;:&quot;&lt;F10&gt;&quot;,&quot;44&quot;:&quot;&lt;F11&gt;&quot;,&quot;45&quot;:&quot;&lt;F12&gt;&quot;,&quot;46&quot;:&quot;&lt;PRTSC&gt;&quot;,&quot;47&quot;:&quot;&lt;SCR&gt;&quot;,&quot;48&quot;:&quot;&lt;PAUSE&gt;&quot;,&quot;49&quot;:&quot;&lt;INSERT&gt;&quot;,&quot;4a&quot;:&quot;&lt;HOME&gt;&quot;,&quot;4b&quot;:&quot;&lt;PGUP&gt;&quot;,&quot;4c&quot;:&quot;&lt;DEL FORWARD&gt;&quot;,&quot;4d&quot;:&quot;&lt;END&gt;&quot;,&quot;4e&quot;:&quot;&lt;PGDW&gt;&quot;,&quot;4f&quot;:&quot;&lt;RIGHTARROW&gt;&quot;,&quot;50&quot;:&quot;&lt;LEFTARROW&gt;&quot;,&quot;51&quot;:&quot;&lt;DOWNARROW&gt;&quot;,&quot;52&quot;:&quot;&lt;UPARRWO&gt;&quot;,&quot;00&quot;:&quot;&quot;&#125;</span><br><span class="line">    CAP_Count = 0 # 默认开始是小写</span><br><span class="line">    result = &quot;&quot;</span><br><span class="line"></span><br><span class="line">    Func_Choice = input(&#x27;需要输出所有的功能键吗?[y/n]:&#x27;).upper()</span><br><span class="line"></span><br><span class="line">    for i in data_list:</span><br><span class="line">        i = i.strip(&quot;\n&quot;)</span><br><span class="line">        single_press = i[4:6]</span><br><span class="line">        Function_press_bit = str(bin(int(i[0:2] ,16))[2:].zfill(8)[::-1])</span><br><span class="line"></span><br><span class="line">        Function_press_dir = &#123;&quot;[Ctrl]&quot;:0 ,&quot;[Shift]&quot;:0 ,&quot;[Alt]&quot;:0 ,&quot;[Win]&quot;:0&#125;</span><br><span class="line">        # 计算功能键的按下情况</span><br><span class="line">        if Function_press_bit[0] != &quot;0&quot; or Function_press_bit[4] != &quot;0&quot;:</span><br><span class="line">            Function_press_dir[&quot;[Ctrl]&quot;] = 1</span><br><span class="line">        if Function_press_bit[1] != &quot;0&quot; or Function_press_bit[5] != &quot;0&quot;:</span><br><span class="line">            Function_press_dir[&quot;[Shift]&quot;] = 1</span><br><span class="line">        if Function_press_bit[2] != &quot;0&quot; or Function_press_bit[6] != &quot;0&quot;:</span><br><span class="line">            Function_press_dir[&quot;[Alt]&quot;] = 1</span><br><span class="line">        if Function_press_bit[3] != &quot;0&quot; or Function_press_bit[7] != &quot;0&quot;:</span><br><span class="line">            Function_press_dir[&quot;[Win]&quot;] = 1</span><br><span class="line"></span><br><span class="line">        # 判断是否为有效press</span><br><span class="line">        if (single_press not in normal_Keys) or (single_press not in shift_Keys):</span><br><span class="line">            continue</span><br><span class="line"></span><br><span class="line">        # 排除重复press</span><br><span class="line">        if i[4:6] != &quot;00&quot; and i[6:8] != &quot;00&quot;:</span><br><span class="line">            continue</span><br><span class="line"></span><br><span class="line">        # 判断按下大写键没</span><br><span class="line">        if single_press == &quot;39&quot;:</span><br><span class="line">            CAP_Count += 1</span><br><span class="line">            continue</span><br><span class="line"></span><br><span class="line">        # 输出功能键组合</span><br><span class="line">        if Func_Choice == &quot;Y&quot;:</span><br><span class="line">            if 1 in Function_press_dir.values() and (Function_press_dir[&quot;[Alt]&quot;] == 1 or Function_press_dir[&quot;[Ctrl]&quot;] == 1 or Function_press_dir[&quot;[Win]&quot;] == 1):</span><br><span class="line">                for Func_tuple in Function_press_dir.items():</span><br><span class="line">                    if Func_tuple[1] == 1:</span><br><span class="line">                        print(f&quot;&#123;Func_tuple[0]&#125; &#123;shift_Keys[single_press]&#125;&quot;)</span><br><span class="line">        </span><br><span class="line">        # 输出按下的键位</span><br><span class="line">        CAP_Judge = (CAP_Count + Function_press_dir[&quot;[Shift]&quot;])%2</span><br><span class="line">        </span><br><span class="line">        if Function_press_dir[&quot;[Shift]&quot;] == 0:</span><br><span class="line">            if CAP_Judge == 0:</span><br><span class="line">                print(normal_Keys[single_press].lower() ,end=&quot;&quot;)</span><br><span class="line">            elif CAP_Judge == 1:</span><br><span class="line">                print(normal_Keys[single_press].upper() ,end=&quot;&quot;)</span><br><span class="line">        else:</span><br><span class="line">            if CAP_Judge == 0:</span><br><span class="line">                print(shift_Keys[single_press].lower() ,end=&quot;&quot;)</span><br><span class="line">            elif CAP_Judge == 1:</span><br><span class="line">                print(shift_Keys[single_press].upper() ,end=&quot;&quot;)</span><br><span class="line"></span><br><span class="line">    print(&quot;\n&quot; ,&quot;-&quot;*50)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_51193993/article/details/109996122">键盘流量</a></p>
+<h4 id="鼠标流量"><a href="#鼠标流量" class="headerlink" title="鼠标流量"></a>鼠标流量</h4><p>基础的鼠标流量看这一篇就能懂<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_43625917/article/details/107723635">鼠标流量</a></p>
+<p>然后这篇讲一下不太常规的鼠标流量，还是用原来的这个流量包，第一步先把鼠标的数据给提出来<br><code>tshark -r USB_Example.pcapng -T fields -Y &#39;usb.src==1.5.2&#39; -e usbhid.data &gt; usbhid.data</code><br><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357713-1829966262.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357713-1829966262.png"  alt="20231108205825" lazyload></a></p>
+<p>能很明显地看出来前面02是整个数据都有的，那么就可以认为这个02就是标示位，<br>然后再找一下有效数据，这一步偏经验一点，但是也有技巧，就是看哪一位既有大字节(ff fe fd…)或者是小字节(01 02 03…)，</p>
+<p><strong>所以关键就是需要找到哪个位置是小字节和大字节都出现过的</strong>，因为我现在遇到过的鼠标都是一个字节存储位移的，所以只需要找两个字节（一个x，一个y）就行了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import matplotlib.pyplot as plt</span><br><span class="line"></span><br><span class="line">file = open(&quot;usbhid.data&quot;).readlines()</span><br><span class="line">posx ,posy = 0 ,0</span><br><span class="line">listx ,listy = [] ,[]</span><br><span class="line">for i in file:</span><br><span class="line">    offsetx = int(i[6:8] ,16)</span><br><span class="line">    offsety = int(i[10:12] ,16)</span><br><span class="line">    if offsetx &gt; 127:</span><br><span class="line">        offsetx -= 255</span><br><span class="line">    if offsety &gt; 127:</span><br><span class="line">        offsety -= 255</span><br><span class="line">    # 记录位置</span><br><span class="line">    posx += offsetx</span><br><span class="line">    posy += offsety</span><br><span class="line">    # 储存位置到列表中</span><br><span class="line">    listx.append(posx)</span><br><span class="line">    listy.append(posy)</span><br><span class="line"></span><br><span class="line">plt.scatter(listx ,listy)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+<p>这个脚本的大致逻辑就是，读取每一行鼠标的数据，再读取偏移，再将偏移存储到一个变量中，再将这个变量的值存储到一个列表中，再用pyplot画出来</p>
+<h4 id="数位板流量"><a href="#数位板流量" class="headerlink" title="数位板流量"></a>数位板流量</h4><p>这个没啥技巧，这个就是纯尝试。<br>他的数据形式是以坐标形式保存的，<br>圣zys写得比我明了<a target="_blank" rel="noopener" href="https://www.cnblogs.com/zysgmzb/p/16667154.html">zysgmzb’s blog</a></p>
+<p>写一下怎么试的吧，因为现在网上只出现过两种数位板流量，两个流量都是来着Wacom公司的板子，所以就可以找一下共同点。</p>
+<p><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357712-21323591.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357712-21323591.png"  alt="20231110164918" lazyload></a><br><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357574-916952465.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357574-916952465.png"  alt="20231110164942" lazyload></a></p>
+<p>乍一看，很乱，然后这个时候，找每一行的共同点就行了，然后再忽略掉共同点<br>提取出来的数据就是他的坐标数据</p>
+<p><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357751-850567130.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357751-850567130.png"  alt="20231110165506" lazyload></a><br><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357733-1161589579.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/3194960-20231110171357733-1161589579.png"  alt="20231110165547" lazyload></a></p>
+<p>然后再试有效位就行了，我直接贴Soer里面的函数了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">def CTL_480(data_list):</span><br><span class="line">    &#x27;&#x27;&#x27;</span><br><span class="line">    型号:CTL-480 [Intuos Pen (S)] (0x030e)</span><br><span class="line">    HID Data(usbhid.data): 02f1560e790fe9022800</span><br><span class="line">    [0:4]==02f1是有效数据  x坐标[4:8]  y坐标[8:12]  </span><br><span class="line">    坐标储存是小端储存</span><br><span class="line">    &#x27;&#x27;&#x27;</span><br><span class="line">    print(&quot;[+] 型号:Wacom CTL-480 [Intuos Pen (S)] (0x030e)\n&quot;)</span><br><span class="line">    x_list ,y_list = [],[]</span><br><span class="line">    for i in data_list:</span><br><span class="line">        i = i.strip(&quot;\n&quot;)</span><br><span class="line">        if i[0:4] == &quot;02f1&quot;:</span><br><span class="line">            x_pos = int(i[4:6] ,16) + int(i[6:8] ,16)*256</span><br><span class="line">            y_pos = int(i[8:10] ,16) + int(i[10:12] ,16)*256</span><br><span class="line">            x_list.append(x_pos)</span><br><span class="line">            y_list.append(-y_pos)</span><br><span class="line">    plt.scatter(x=x_list ,y=y_list ,c=&#x27;hotpink&#x27;)</span><br><span class="line">    plt.title(&quot;CTL 480&quot;)</span><br><span class="line">    plt.show()</span><br><span class="line"></span><br><span class="line">def PTH_660(data_list):</span><br><span class="line">    &#x27;&#x27;&#x27;</span><br><span class="line">    型号:PTH-660 [Intuos Pro (M)] (0x0357)</span><br><span class="line">    HID Data(usbhid.data): 10614157000a1f00bd191404000000000084308094420810004208</span><br><span class="line">    [16:18]!=00即为有效数据  x坐标[4:8]  y坐标[10:14]</span><br><span class="line">    坐标储存是小端储存</span><br><span class="line">    &#x27;&#x27;&#x27;</span><br><span class="line">    print(&quot;[+] Wacom 型号:PTH-660 [Intuos Pro (M)] (0x0357)\n&quot;)</span><br><span class="line">    x_list ,y_list = [],[]</span><br><span class="line">    for i in data_list:</span><br><span class="line">        i = i.strip(&quot;\n&quot;)</span><br><span class="line">        if len(i) != 54:</span><br><span class="line">            continue</span><br><span class="line">        if i[16:18] != &quot;00&quot; :</span><br><span class="line">            x_pos = int(i[4:6] ,16) + int(i[6:8] ,16)*256</span><br><span class="line">            y_pos = int(i[10:12] ,16) + int(i[12:14] ,16)*256</span><br><span class="line">            x_list.append(x_pos)</span><br><span class="line">            y_list.append(-y_pos)</span><br><span class="line">    plt.scatter(x=x_list ,y=y_list ,c=&#x27;hotpink&#x27;)</span><br><span class="line">    plt.title(&quot;PTH 660&quot;)</span><br><span class="line">    plt.show()</span><br></pre></td></tr></table></figure>
+
+<p>要用的时候，直接调这两个函数就行了。</p>
+<h5 id="这里贴上USBFlow-Soer的地址，https-github-com-y1shiny1shin-USBFlow-Soer-有github账号的还是给小弟我点个star吧，求求了"><a href="#这里贴上USBFlow-Soer的地址，https-github-com-y1shiny1shin-USBFlow-Soer-有github账号的还是给小弟我点个star吧，求求了" class="headerlink" title="这里贴上USBFlow_Soer的地址，https://github.com/y1shiny1shin/USBFlow_Soer 有github账号的还是给小弟我点个star吧，求求了"></a>这里贴上USBFlow_Soer的地址，<code>https://github.com/y1shiny1shin/USBFlow_Soer</code> 有github账号的还是给小弟我点个star吧，求求了</h5><p><strong>如果，我是说如果的话，装好usbpcap了，抓个USB的包发给小弟我，我好继续做这个项目，求求了</strong><br><strong>用QQ:2729913542 或者是邮箱 <a href="mailto:&#121;&#49;&#115;&#104;&#x69;&#110;&#64;&#x31;&#54;&#x33;&#x2e;&#99;&#111;&#109;">&#121;&#49;&#115;&#104;&#x69;&#110;&#64;&#x31;&#54;&#x33;&#x2e;&#99;&#111;&#109;</a>联系我都行，求求了</strong></p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-2"><a class="top-box-link" href="#USB%E6%B5%81%E9%87%8F%E7%9A%84%E7%BB%93%E6%9E%84"><span class="top-box-text">USB流量的结构</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+  </div>
+
+
+
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/y1shiny1shin" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a aria-label="跳转至email" href="y1shin@163.com" target="_blank">
+          <i class="icon icon-email"></i>
+        </a>
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"photo_zoom":"simple-lightbox"}}; window.is_post = true; </script>
+
+<script src="/project/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/project/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+

